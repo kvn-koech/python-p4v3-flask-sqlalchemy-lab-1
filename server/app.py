@@ -1,4 +1,3 @@
-# server/app.py
 #!/usr/bin/env python3
 
 from flask import Flask, make_response
@@ -21,6 +20,31 @@ def index():
     return make_response(body, 200)
 
 # Add views here
+
+# Task #3: Get earthquake by ID
+@app.route('/earthquakes/<int:id>')
+def earthquake_by_id(id):
+    earthquake = Earthquake.query.filter(Earthquake.id == id).first()
+    
+    if not earthquake:
+        return {"message": f"Earthquake {id} not found."}, 404
+    
+    return earthquake.to_dict()
+
+# Task #4: Get earthquakes by minimum magnitude
+@app.route('/earthquakes/magnitude/<float:magnitude>')
+def earthquakes_by_magnitude(magnitude):
+    # Query for earthquakes with magnitude >= the parameter value
+    earthquakes = Earthquake.query.filter(Earthquake.magnitude >= magnitude).all()
+    
+    # Convert each earthquake to dictionary
+    quakes_data = [earthquake.to_dict() for earthquake in earthquakes]
+    
+    # Return count and list of earthquakes
+    return {
+        "count": len(quakes_data),
+        "quakes": quakes_data
+    }
 
 
 if __name__ == '__main__':
